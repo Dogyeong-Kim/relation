@@ -1,5 +1,8 @@
 package com.example.relation.repository;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -102,5 +105,45 @@ public class TeamRepositoryTest {
         System.out.println(team);
         // 객체그래프탐색
         team.getMembers().forEach(member -> System.out.println(member));
+    }
+
+    // ------------------------
+    // 양방향
+    // 영속성 전이 : Cascade
+    // ------------------------
+
+    @Test
+    public void insertTest3() {
+
+        Team team = Team.builder().teamName("team3").build();
+        TeamMember teamMember = TeamMember.builder().userName("홍길동").team(team).build();
+
+        team.getMembers().add(teamMember);
+
+        // teamMemberRepository.save(teamMember);
+        teamRepository.save(team);
+    }
+
+    @Test
+    public void deleteTest2() {
+        // 부모 삭제 시 자식도 같이 삭제
+        // deleteTest() 와 비교
+        teamRepository.deleteById(3L);
+    }
+
+    @Test
+    public void readTest3() {
+        Team team = Team.builder().id(2L).build();
+        List<TeamMember> list = teamMemberRepository.findByTeam(team);
+        System.out.println(list);
+    }
+
+    @Test
+    public void findByMemberEqualTeamTest() {
+        List<Object[]> result = teamMemberRepository.findByMemberEqualTeam(2L);
+
+        for (Object[] objects : result) {
+            System.out.println(Arrays.toString(objects));
+        }
     }
 }
